@@ -68,7 +68,7 @@ def open_archive(
         return None
     try:
         archive = zipfile.ZipFile(_BytesReader(data))
-    except zipfile.BadZipFile as exc:
+    except _OPEN_FAILURES as exc:
         report.add(invalid, f"not a readable ZIP archive: {exc}")
         return None
     return archive
@@ -177,8 +177,28 @@ def read_entry(
 
 #: What `zipfile` raises for an entry whose bytes cannot be decoded: a bad
 #: header or CRC, corrupt compressed data, truncation, an unsupported method,
-#: or encryption.
-_DECODE_FAILURES = (zipfile.BadZipFile, zlib.error, EOFError, NotImplementedError, RuntimeError)
+#: encryption, or a directory offset that points before the start of the file.
+_DECODE_FAILURES = (
+    zipfile.BadZipFile,
+    zlib.error,
+    EOFError,
+    NotImplementedError,
+    RuntimeError,
+    ValueError,
+)
+
+
+#: What `zipfile` raises while reading the central directory: a structure that
+#: is not ZIP, a file name that is not the UTF-8 its flag declares, or a version
+#: of the format it does not implement.
+_OPEN_FAILURES = (
+    zipfile.BadZipFile,
+    EOFError,
+    NotImplementedError,
+    OSError,
+    OverflowError,
+    ValueError,
+)
 
 
 class UnreadableEntryError(Exception):

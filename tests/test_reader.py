@@ -1046,6 +1046,36 @@ class CorruptedEntries(unittest.TestCase):
                 with self.assertRaises(sref_reader.SrefError):
                     sref_reader.read_package(data)
 
+    def test_a_directory_offset_past_the_real_one_is_reported(self):
+        data = bytearray(self.package(zipfile.ZIP_STORED))
+        end = data.rfind(b"PK\x05\x06")
+        directory_offset = int.from_bytes(data[end + 16 : end + 20], "little")
+        data[end + 16 : end + 20] = (directory_offset + 100).to_bytes(4, "little")
+        _, report = sref_reader.validate_package(bytes(data))
+        self.assertEqual(report.codes, ["invalid-zip"])
+        with self.assertRaises(sref_reader.SrefError):
+            sref_reader.read_package(bytes(data))
+
+    def test_a_file_name_that_is_not_utf8_is_reported(self):
+        name = "n" * 13
+        info = zipfile.ZipInfo(name)
+        info.flag_bits |= 0x800
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr(info, b"{}")
+        data = buffer.getvalue().replace(name.encode(), b"\xff" * len(name))
+        for validate in (sref_reader.validate_package, sref_reader.validate_bundle):
+            with self.subTest(validate=validate.__name__):
+                _, report = validate(data)
+                self.assertFalse(report.valid)
+
+    def test_a_zip_version_the_library_does_not_implement_is_reported(self):
+        data = bytearray(self.package(zipfile.ZIP_STORED))
+        directory = data.find(b"PK\x01\x02")
+        data[directory + 6 : directory + 8] = (97).to_bytes(2, "little")
+        _, report = sref_reader.validate_package(bytes(data))
+        self.assertFalse(report.valid)
+
     def test_a_damaged_bundle_entry_is_reported(self):
         data = self.corrupt(ManifestSchemas().bundle(), "manifest.json")
         _, report = sref_reader.validate_bundle(data)
