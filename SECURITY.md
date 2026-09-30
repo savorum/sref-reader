@@ -32,11 +32,14 @@ repository's policy.
 
 ## Reporting
 
-Use the hosting platform's private vulnerability-reporting feature when it is
-available. Otherwise contact a maintainer privately through the hosting platform
-and ask for a secure reporting channel. Do not include exploit details in a
-public issue.
+Report a vulnerability privately through
+[GitHub private vulnerability reporting](https://github.com/savorum/sref-reader/security/advisories/new).
+Do not include exploit details in a public issue.
 
 A report should include the affected artifact or a way to build it, the version,
 and the effect. A fix adds a regression test that reproduces the issue without
 unnecessary risk.
+
+The project acknowledges a report within 7 days and assesses affected versions.
+The disclosure timeline is 90 days from the report, or earlier when a fix is
+released.
