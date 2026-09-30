@@ -46,7 +46,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - run: python3 -m pip install --disable-pip-version-check ruff
+      - run: python3 -m pip install --disable-pip-version-check --require-hashes -r requirements-ci.txt
       - run: ruff check .
       - run: ruff format --check .
 
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - run: python3 -m pip install --disable-pip-version-check jsonschema
+      - run: python3 -m pip install --disable-pip-version-check --require-hashes -r requirements-ci.txt
       - run: python3 -m unittest discover -s tests -v
       - run: python3 tools/conformance.py --sref .sref
       - run: python3 .sref/conformance/runner.py --adapter "python3 tools/adapter.py"
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - run: python3 -m pip install --disable-pip-version-check build
+      - run: python3 -m pip install --disable-pip-version-check --require-hashes -r requirements-ci.txt
       - run: python3 -m build --outdir dist .
       - run: python3 -m venv .installed
       - run: .installed/bin/pip install --disable-pip-version-check dist/*.whl

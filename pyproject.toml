@@ -15,7 +15,7 @@ license = "MIT"
 dependencies = ["jsonschema>=4.18"]
 
 [project.optional-dependencies]
-dev = ["ruff"]
+dev = ["hypothesis", "ruff"]
 
 [project.urls]
 Specification = "https://github.com/savorum/sref"

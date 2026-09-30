@@ -11,6 +11,14 @@ python3 -m ruff format --check .
 python3 -m unittest discover -s tests -v
 ```
 
+CI installs `requirements-ci.txt`, which pins every package by hash. After
+changing `requirements-ci.in`, regenerate it:
+
+```sh
+uv pip compile requirements-ci.in --universal --generate-hashes \
+  --python-version 3.14 -o requirements-ci.txt
+```
+
 ## Conformance
 
 The library claims these capabilities for SREF 0.4.0 with unit registry 0.2.0:
