@@ -2,8 +2,8 @@
 
 ## Supported versions
 
-The default branch is supported. Other versions do not receive security
-maintenance.
+The latest release and the default branch are supported. Other versions do not
+receive security maintenance.
 
 ## Scope
 
@@ -39,6 +39,9 @@ Do not include exploit details in a public issue.
 A report should include the affected artifact or a way to build it, the version,
 and the effect. A fix adds a regression test that reproduces the issue without
 unnecessary risk.
+
+A confirmed vulnerability is published as a GitHub security advisory once a fix
+is available, naming the affected and fixed versions.
 
 The project acknowledges a report within 7 days and assesses affected versions.
 The disclosure timeline is 90 days from the report, or earlier when a fix is
