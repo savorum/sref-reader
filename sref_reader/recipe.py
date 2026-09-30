@@ -60,6 +60,8 @@ LEGACY_ASSET_ROLES = {
     "step-image": "legacy-step-image-role",
 }
 
+_UNINTERPRETABLE = (AttributeError, IndexError, KeyError, TypeError, ValueError)
+
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DATE_TIME = re.compile(r"^\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(\.\d+)?([Zz]|[+-]\d{2}:\d{2})$")
 _DURATION = re.compile(
@@ -142,8 +144,18 @@ def validate(
     # The prose checks run first so that a specific requirement is the first
     # violation reported. The schema is a second gate for structural problems
     # no rule here covers, and its findings belong after them.
-    _check_document(document, context)
+    try:
+        _check_document(document, context)
+        uninterpretable = False
+    except _UNINTERPRETABLE:
+        # A member of a type the checks do not expect. The schema names the
+        # member when it is available; without it the refusal is generic.
+        uninterpretable = True
     schema_module.check(document, "recipe", report)
+    if uninterpretable and report.valid:
+        report.add(
+            schema_module.GENERIC_STRUCTURAL, "the document's structure cannot be interpreted"
+        )
     if not format_compatibility.newer:
         # Only a document declaring a newer version may carry members this
         # build does not define. One declaring the version this build

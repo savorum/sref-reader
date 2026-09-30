@@ -1008,6 +1008,16 @@ class VersionScopedMembers(unittest.TestCase):
         self.assertIn("member-not-defined-by-version", report.codes)
 
 
+class MistypedMembers(unittest.TestCase):
+    """A member of the wrong type is a refusal, never an exception of another kind."""
+
+    def test_a_step_whose_text_is_not_a_string_is_refused(self):
+        steps = [{"id": "s", "text": [None]}]
+        data = document(instruction_sections=[{"id": "m", "steps": steps}])
+        with self.assertRaises(sref_reader.SrefError):
+            sref_reader.read_recipe(data)
+
+
 class CorruptedEntries(unittest.TestCase):
     """An entry whose bytes cannot be decoded is a violation, never an exception."""
 
