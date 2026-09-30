@@ -1,0 +1,18 @@
+{
+  "format": "sref-release-snapshot",
+  "version": 1,
+  "sref_version": "0.4.0",
+  "unit_registry_version": "0.2.0",
+  "state": "released",
+  "files": {
+    "registry/units.json": "796a4369bb3cc0a712e499bfaab84df96b8aad4e35c785fe287c90a7bb9b62c4",
+    "schema/bundle-manifest.schema.json": "f4ee0dc257f6b2ba6eaabceee62aed9c41c9251e55007ae0efe78410b5edb0b7",
+    "schema/conformance-manifest.schema.json": "e460e427b786775ac266eba3227b9f8d41cee319056482e402dc96f3ec366fb9",
+    "schema/ingredient-line-corpus.schema.json": "7726805e50666e4593bab8f85be571de706eb8c936d86e00abfd34a610dfd2ef",
+    "schema/manifest.schema.json": "4ea15bf17194d58589d37e8642ba6c2fec0e88f9de52754ce2f36d4ff525160a",
+    "schema/recipe.schema.json": "4e02ae451789f9617480582a49b78e55382793f2dfeb8add4118d05cf88cd3f1",
+    "schema/unit-conversion-corpus.schema.json": "c7fa4e3c7b5818877c595e42e269057e6bf90a5a739c8595af11187c8e5768a8",
+    "schema/unit-registry.schema.json": "7b6e60090c9f94c9a6cb3a5c89ccf0e72fb6d2f1946a55a12a3bbede2706c8f6",
+    "schema/unit-resolution-corpus.schema.json": "747c6964043c493f788a65beca4d5dc072fc570a5771de5a21460012dac4e6a6"
+  }
+}

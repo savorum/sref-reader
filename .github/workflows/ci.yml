@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  # An exact revision, not a branch; `drift` reports upstream movement.
+  SREF_COMMIT: 90b5302b6b26c8c871c55606ef5562a713ee8dd6
+
+jobs:
+  dco:
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require a Developer Certificate of Origin sign-off
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: tools/check-dco.sh "$BASE" "$HEAD"
+
+  lint:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - run: python3 -m pip install --disable-pip-version-check ruff
+      - run: ruff check .
+      - run: ruff format --check .
+
+  conformance:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: savorum/sref
+          ref: ${{ env.SREF_COMMIT }}
+          path: .sref
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - run: python3 -m pip install --disable-pip-version-check jsonschema
+      - run: python3 -m unittest discover -s tests -v
+      - run: python3 tools/conformance.py --sref .sref
+      - run: python3 .sref/conformance/runner.py --adapter "python3 tools/adapter.py"
+
+  # Builds the wheel from the sdist and runs it outside the checkout, so a file
+  # missing from the distribution fails.
+  installed:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: savorum/sref
+          ref: ${{ env.SREF_COMMIT }}
+          path: .sref
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - run: python3 -m pip install --disable-pip-version-check build
+      - run: python3 -m build --outdir dist .
+      - run: python3 -m venv .installed
+      - run: .installed/bin/pip install --disable-pip-version-check dist/*.whl
+      - run: mkdir -p .elsewhere && cd .elsewhere && ../.installed/bin/python ../tools/installed.py --sref ../.sref
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  # Nonblocking: a failure means the pin is behind, not that a change is wrong.
+  drift:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: savorum/sref
+          ref: main
+          fetch-depth: 0
+          path: .sref
+          persist-credentials: false
+      - run: ./tools/drift.sh .sref

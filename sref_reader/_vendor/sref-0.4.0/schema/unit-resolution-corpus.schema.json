@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:unit-resolution-corpus:0.2.0",
+  "title": "SREF unit resolution conformance corpus 0.2.0",
+  "type": "object",
+  "required": [
+    "unit_registry",
+    "profiles",
+    "cases"
+  ],
+  "properties": {
+    "unit_registry": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "profiles": {
+      "description": "Convention profiles, each a registry-versioned mapping from a unit family to one canonical identity. A display label is never a profile.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}$"
+    },
+    "unitID": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+$"
+    },
+    "family": {
+      "description": "A unit family names the measure a convention answers for, such as volume.cup. It is not a unit ID.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*$"
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "unit_registry",
+        "units"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "unit_registry": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "units": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/family"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/unitID"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "occurrence": {
+      "description": "One unqualified or qualified unit occurrence in an ingredient's quantity expression, addressed by an identity that survives repeated spellings of one alias.",
+      "type": "object",
+      "required": [
+        "id",
+        "ingredient",
+        "form",
+        "family"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "ingredient": {
+          "description": "The authored ingredient statement this occurrence belongs to. An ingredient convention reaches exactly one of these.",
+          "$ref": "#/$defs/identifier"
+        },
+        "form": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "family": {
+          "$ref": "#/$defs/family"
+        },
+        "explicit_unit": {
+          "description": "The identity the source itself states, through a qualifier, a stated equivalence, or a canonical ID. A decision never overrides it.",
+          "$ref": "#/$defs/unitID"
+        }
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "kind",
+            "occurrence",
+            "unit"
+          ],
+          "properties": {
+            "kind": {
+              "const": "occurrence-interpretation"
+            }
+          }
+        },
+        {
+          "required": [
+            "kind",
+            "ingredient",
+            "profile"
+          ],
+          "properties": {
+            "kind": {
+              "const": "ingredient-convention"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "occurrence-interpretation",
+            "ingredient-convention"
+          ]
+        },
+        "occurrence": {
+          "$ref": "#/$defs/identifier"
+        },
+        "ingredient": {
+          "$ref": "#/$defs/identifier"
+        },
+        "unit": {
+          "$ref": "#/$defs/unitID"
+        },
+        "profile": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "description",
+        "source_text",
+        "occurrences",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "source_locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255
+        },
+        "source_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "occurrences": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/occurrence"
+          }
+        },
+        "decisions": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/decision"
+          }
+        },
+        "expected": {
+          "$ref": "#/$defs/expectation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectation": {
+      "type": "object",
+      "required": [
+        "outcome"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "outcome",
+            "units"
+          ],
+          "properties": {
+            "outcome": {
+              "const": "resolved"
+            }
+          }
+        },
+        {
+          "required": [
+            "outcome",
+            "conflict"
+          ],
+          "properties": {
+            "outcome": {
+              "const": "conflict"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "outcome": {
+          "description": "`resolved` states the identity of every occurrence, using null for one that must remain unresolved. `conflict` states that the supplied context is contradictory and no occurrence is resolved.",
+          "enum": [
+            "resolved",
+            "conflict"
+          ]
+        },
+        "units": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/unitID"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "conflict": {
+          "enum": [
+            "occurrence",
+            "convention"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:conformance-manifest:0.4.0",
+  "title": "SREF conformance manifest 0.4.0",
+  "type": "object",
+  "required": [
+    "sref_version",
+    "unit_registry_version",
+    "cases"
+  ],
+  "properties": {
+    "sref_version": {
+      "const": "0.4.0"
+    },
+    "unit_registry_version": {
+      "const": "0.2.0"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "capabilities",
+        "fixture",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,127}$"
+        },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "json-reader",
+              "json-writer",
+              "package-reader",
+              "package-writer",
+              "bundle-reader",
+              "bundle-writer",
+              "registry",
+              "ingredient-parser",
+              "unit-conversion",
+              "unit-resolution",
+              "round-trip"
+            ]
+          }
+        },
+        "fixture": {
+          "type": "string",
+          "pattern": "^(examples|registry|tests)/[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "maxLength": 512
+        },
+        "expected": {
+          "enum": [
+            "valid",
+            "invalid"
+          ]
+        },
+        "validation": {
+          "enum": [
+            "json",
+            "schema",
+            "semantic",
+            "package",
+            "bundle"
+          ]
+        },
+        "error_category": {
+          "enum": [
+            "invalid-artifact",
+            "unsupported-format-version",
+            "unsupported-registry-version",
+            "unknown-unit",
+            "integrity-failure",
+            "unsafe-archive",
+            "resource-limit"
+          ]
+        },
+        "requirement_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,127}$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "expected": {
+                "const": "invalid"
+              }
+            },
+            "required": [
+              "expected"
+            ]
+          },
+          "then": {
+            "required": [
+              "validation",
+              "error_category",
+              "requirement_id"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

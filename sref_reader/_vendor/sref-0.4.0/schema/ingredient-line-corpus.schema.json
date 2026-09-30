@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:ingredient-line-corpus:0.4.0",
+  "title": "SREF ingredient-line conformance corpus 0.4.0",
+  "type": "object",
+  "required": [
+    "cases"
+  ],
+  "properties": {
+    "cases": {
+      "type": "array",
+      "minItems": 100,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "source_text",
+        "classification",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,127}$"
+        },
+        "source_locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255
+        },
+        "source_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "classification": {
+          "enum": [
+            "structured",
+            "partial",
+            "opaque"
+          ]
+        },
+        "expected": {
+          "$ref": "urn:sref:schema:recipe:0.4.0#/$defs/ingredient"
+        },
+        "must_not_infer": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,127}$"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

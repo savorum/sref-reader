@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:bundle-manifest:1",
+  "title": "SREF bundle manifest 1",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "recipes"
+  ],
+  "properties": {
+    "format": {
+      "const": "sref-bundle"
+    },
+    "version": {
+      "const": 1
+    },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/recipeEntry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "portableId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "recipeEntry": {
+      "type": "object",
+      "required": [
+        "member_id",
+        "recipe_id",
+        "path",
+        "sha256",
+        "size"
+      ],
+      "properties": {
+        "member_id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "recipe_id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^recipes/[A-Za-z0-9][A-Za-z0-9._-]{0,127}\\.sref$",
+          "maxLength": 512
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

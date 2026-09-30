@@ -1,0 +1,2056 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:recipe:0.4.0",
+  "title": "SREF recipe 0.4.0",
+  "$comment": "Objects are open so an older reader can validate the subset it understands from a newer compatible document. That is not permission to author unknown non-extension members under the exactly declared version: specification section 13 scopes the allowance to reading a newer version, and section 23 makes the declared-version member vocabulary a semantic requirement this schema cannot express, because additionalProperties cannot depend on a sibling value.",
+  "type": "object",
+  "required": [
+    "sref",
+    "id",
+    "title"
+  ],
+  "anyOf": [
+    {"required": ["ingredient_sections"]},
+    {"required": ["instruction_sections"]}
+  ],
+  "properties": {
+    "sref": {
+      "$ref": "#/$defs/srefHeader"
+    },
+    "id": {
+      "$ref": "#/$defs/portableId"
+    },
+    "title": {
+      "$ref": "#/$defs/title"
+    },
+    "description": {
+      "$ref": "#/$defs/longText"
+    },
+    "language": {
+      "$ref": "#/$defs/languageTag"
+    },
+    "source_locale": {
+      "$ref": "#/$defs/languageTag"
+    },
+    "authors": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/author"
+      }
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "yields": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/yield"
+      }
+    },
+    "nutrition": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/nutritionStatement"
+      }
+    },
+    "times": {
+      "$ref": "#/$defs/times"
+    },
+    "categories": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "courses": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "keywords": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "cuisines": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "cooking_methods": {
+      "$ref": "#/$defs/stringSet"
+    },
+    "published": {
+      "$ref": "#/$defs/dateOrDateTime"
+    },
+    "modified": {
+      "$ref": "#/$defs/dateOrDateTime"
+    },
+    "notes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/longText"
+      }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/variant"
+      }
+    },
+    "equipment": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/equipment"
+      }
+    },
+    "dietary_claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/dietaryClaim"
+      }
+    },
+    "allergen_declarations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/allergenDeclaration"
+      }
+    },
+    "translations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/translation"
+      }
+    },
+    "ingredient_sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/ingredientSection"
+      }
+    },
+    "instruction_sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/instructionSection"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "image_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/portableId"
+      }
+    },
+    "primary_image": {
+      "$ref": "#/$defs/portableId"
+    },
+    "extensions": {
+      "$ref": "#/$defs/extensions"
+    }
+  },
+  "propertyNames": {
+    "$ref": "#/$defs/objectMemberName"
+  },
+  "patternProperties": {
+    "^x-": true
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "objectMemberName": {
+      "type": "string",
+      "pattern": "^(?:(?!x-).*|x-(?=.{1,128}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.){2,}[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)$"
+    },
+    "srefHeader": {
+      "type": "object",
+      "required": [
+        "version",
+        "unit_registry"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "unit_registry": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "portableId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "longText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000000
+    },
+    "languageTag": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "dateOrDateTime": {
+      "type": "string",
+      "oneOf": [
+        {
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        {
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:[Zz]|[+-][0-9]{2}:[0-9]{2})$"
+        }
+      ]
+    },
+    "variant": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "text": {
+          "$ref": "#/$defs/longText"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "variants"
+            ]
+          },
+          {
+            "required": [
+              "ingredient_sections"
+            ]
+          },
+          {
+            "required": [
+              "instruction_sections"
+            ]
+          },
+          {
+            "required": [
+              "yields"
+            ]
+          },
+          {
+            "required": [
+              "nutrition"
+            ]
+          },
+          {
+            "required": [
+              "times"
+            ]
+          }
+        ]
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "equipment": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "quantity": {
+          "$ref": "#/$defs/quantity"
+        },
+        "note": {
+          "$ref": "#/$defs/longText"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "translation": {
+      "type": "object",
+      "required": [
+        "relation",
+        "language"
+      ],
+      "properties": {
+        "relation": {
+          "enum": [
+            "original",
+            "translation",
+            "alternate"
+          ]
+        },
+        "language": {
+          "$ref": "#/$defs/languageTag"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "recipe_id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 10000
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "title"
+          ]
+        },
+        {
+          "required": [
+            "recipe_id"
+          ]
+        },
+        {
+          "required": [
+            "url"
+          ]
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "author": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "person",
+            "organization",
+            "other"
+          ]
+        },
+        "kind_label": {
+          "$ref": "#/$defs/shortText"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+          "maxLength": 10000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "kind_label"
+            ]
+          },
+          "then": {
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            }
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "rational": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*|[1-9][0-9]*/[1-9][0-9]*)$",
+      "maxLength": 128
+    },
+    "signedRational": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*|[1-9][0-9]*/[1-9][0-9]*)$",
+      "maxLength": 128
+    },
+    "unitId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+$",
+      "maxLength": 255
+    },
+    "amount": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/exactAmount"
+        },
+        {
+          "$ref": "#/$defs/rangeAmount"
+        }
+      ]
+    },
+    "temperatureAmount": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/signedExactAmount"
+        },
+        {
+          "$ref": "#/$defs/signedRangeAmount"
+        }
+      ]
+    },
+    "exactAmount": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/rational"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "rangeAmount": {
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "$ref": "#/$defs/rational"
+        },
+        "max": {
+          "$ref": "#/$defs/rational"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "signedExactAmount": {
+      "type": "object",
+      "required": ["value"],
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/signedRational"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "signedRangeAmount": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "$ref": "#/$defs/signedRational"
+        },
+        "max": {
+          "$ref": "#/$defs/signedRational"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "simpleQuantity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "amount"
+      ],
+      "properties": {
+        "kind": {
+          "const": "simple"
+        },
+        "amount": {
+          "$ref": "#/$defs/amount"
+        },
+        "unit": {
+          "$ref": "#/$defs/unitId"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "sumQuantity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "terms"
+      ],
+      "properties": {
+        "kind": {
+          "const": "sum"
+        },
+        "terms": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/simpleQuantity"
+          }
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "alternativeQuantity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "options"
+      ],
+      "properties": {
+        "kind": {
+          "const": "alternatives"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/alternativeOption"
+          }
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "alternativeOption": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/simpleQuantity"
+        },
+        {
+          "$ref": "#/$defs/sumQuantity"
+        }
+      ]
+    },
+    "opaqueQuantity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "opaque"
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "quantity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/simpleQuantity"
+        },
+        {
+          "$ref": "#/$defs/sumQuantity"
+        },
+        {
+          "$ref": "#/$defs/alternativeQuantity"
+        },
+        {
+          "$ref": "#/$defs/opaqueQuantity"
+        }
+      ]
+    },
+    "packageSize": {
+      "type": "object",
+      "required": [
+        "kind",
+        "amount",
+        "unit"
+      ],
+      "properties": {
+        "kind": {
+          "const": "simple"
+        },
+        "amount": {
+          "$ref": "#/$defs/amount"
+        },
+        "unit": {
+          "$ref": "#/$defs/unitId"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "ingredient": {
+      "if": {
+        "type": "object",
+        "required": [
+          "alternatives"
+        ]
+      },
+      "then": {
+        "$ref": "#/$defs/ingredientChoice"
+      },
+      "else": {
+        "$ref": "#/$defs/ingredientBranch"
+      }
+    },
+    "ingredientBranch": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "quantity": {
+          "$ref": "#/$defs/quantity"
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false
+        },
+        "note": {
+          "$ref": "#/$defs/longText"
+        },
+        "source_text": {
+          "$ref": "#/$defs/longText"
+        },
+        "normalization": {
+          "$ref": "#/$defs/normalization"
+        },
+        "package_size": {
+          "$ref": "#/$defs/packageSize"
+        },
+        "temperature": {
+          "$ref": "#/$defs/temperature"
+        },
+        "recipe": {
+          "$ref": "#/$defs/recipeReference"
+        },
+        "alternatives": false,
+        "relation": false
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "normalization"
+            ],
+            "properties": {
+              "normalization": {
+                "required": [
+                  "method"
+                ],
+                "properties": {
+                  "method": {
+                    "enum": [
+                      "extracted",
+                      "inferred",
+                      "unresolved"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_text"
+            ]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "ingredientChoice": {
+      "type": "object",
+      "required": [
+        "id",
+        "alternatives",
+        "relation"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false
+        },
+        "note": {
+          "$ref": "#/$defs/longText"
+        },
+        "source_text": {
+          "$ref": "#/$defs/longText"
+        },
+        "normalization": {
+          "$ref": "#/$defs/normalization"
+        },
+        "alternatives": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/ingredientBranch"
+          }
+        },
+        "relation": {
+          "enum": [
+            "or",
+            "and_or",
+            "preferred"
+          ]
+        },
+        "name": false,
+        "quantity": false,
+        "package_size": false,
+        "temperature": false
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "normalization"
+            ],
+            "properties": {
+              "normalization": {
+                "required": [
+                  "method"
+                ],
+                "properties": {
+                  "method": {
+                    "enum": [
+                      "extracted",
+                      "inferred",
+                      "unresolved"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_text"
+            ]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "normalization": {
+      "type": "object",
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "authored",
+            "extracted",
+            "inferred",
+            "unresolved"
+          ]
+        },
+        "review": {
+          "enum": [
+            "confirmed",
+            "corrected"
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/shortText"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "enum": ["inferred", "unresolved"]
+              }
+            },
+            "required": ["method"]
+          },
+          "then": {
+            "required": ["warnings"]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "ingredientSection": {
+      "type": "object",
+      "required": [
+        "id",
+        "ingredients"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "ingredients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "items": {
+            "$ref": "#/$defs/ingredient"
+          }
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "ingredientUse": {
+      "type": "object",
+      "required": [
+        "ingredient_ref"
+      ],
+      "properties": {
+        "ingredient_ref": {
+          "$ref": "#/$defs/portableId"
+        },
+        "quantity": {
+          "$ref": "#/$defs/quantity"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "id",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "text": {
+          "$ref": "#/$defs/longText"
+        },
+        "ingredient_uses": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "items": {
+            "$ref": "#/$defs/ingredientUse"
+          }
+        },
+        "image_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/portableId"
+          }
+        },
+        "timing_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/portableId"
+          }
+        },
+        "temperatures": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/temperature"
+          }
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "instructionSection": {
+      "type": "object",
+      "required": [
+        "id",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "source": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 10000
+        },
+        "application": {
+          "$ref": "#/$defs/shortText"
+        },
+        "source_id": {
+          "$ref": "#/$defs/shortText"
+        },
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attribution": {
+          "$ref": "#/$defs/longText"
+        }
+      },
+      "anyOf": [
+        {"required": ["name"]},
+        {"required": ["url"]},
+        {"required": ["application"]},
+        {"required": ["attribution"]}
+      ],
+      "allOf": [
+        {
+          "if": {
+            "required": ["source_id"]
+          },
+          "then": {
+            "required": ["application"]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "yield": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "quantity": {
+          "$ref": "#/$defs/quantity"
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "text"
+          ]
+        },
+        {
+          "required": [
+            "quantity"
+          ]
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "times": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "prep": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "cook": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "additional": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "total": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "assertions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/timingAssertion"
+          }
+        }
+      },
+      "anyOf": [
+        {"required": ["prep"]},
+        {"required": ["cook"]},
+        {"required": ["additional"]},
+        {"required": ["total"]},
+        {"required": ["assertions"]}
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "timingAssertion": {
+      "type": "object",
+      "required": [
+        "id",
+        "duration"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "prep",
+            "soak",
+            "brine",
+            "marinate",
+            "cure",
+            "proof",
+            "ferment",
+            "chill",
+            "freeze",
+            "drain",
+            "cook",
+            "rest",
+            "cool",
+            "other"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        },
+        "duration": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "microwave": {
+          "$ref": "#/$defs/microwaveConditions"
+        },
+        "attention": {
+          "type": "string",
+          "enum": [
+            "active",
+            "passive"
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "label"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": ["microwave"],
+            "properties": {
+              "microwave": {
+                "required": ["choices"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "duration": {
+                "required": ["text"]
+              }
+            }
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "microwaveConditions": {
+      "type": "object",
+      "required": ["source_text"],
+      "properties": {
+        "rated_output_watts": {
+          "$ref": "#/$defs/microwaveWatts"
+        },
+        "power": {
+          "$ref": "#/$defs/microwavePower"
+        },
+        "mode_text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "restrictions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/shortText"
+          }
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/microwaveChoice"
+          }
+        },
+        "source_text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "anyOf": [
+        {"required": ["rated_output_watts"]},
+        {"required": ["power"]},
+        {"required": ["mode_text"]},
+        {"required": ["restrictions"]},
+        {"required": ["choices"]}
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "microwaveChoice": {
+      "type": "object",
+      "required": ["duration", "source_text"],
+      "properties": {
+        "duration": {
+          "$ref": "#/$defs/durationExpression"
+        },
+        "rated_output_watts": {
+          "$ref": "#/$defs/microwaveWatts"
+        },
+        "power": {
+          "$ref": "#/$defs/microwavePower"
+        },
+        "source_text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "anyOf": [
+        {"required": ["rated_output_watts"]},
+        {"required": ["power"]}
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "microwavePower": {
+      "type": "object",
+      "properties": {
+        "watts": {
+          "$ref": "#/$defs/microwaveWatts"
+        },
+        "percent": {
+          "$ref": "#/$defs/rational"
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["watts"],
+          "not": {"anyOf": [{"required": ["percent"]}, {"required": ["text"]}]}
+        },
+        {
+          "required": ["percent"],
+          "not": {"anyOf": [{"required": ["watts"]}, {"required": ["text"]}]}
+        },
+        {
+          "required": ["text"],
+          "not": {"anyOf": [{"required": ["watts"]}, {"required": ["percent"]}]}
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "microwaveWatts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "durationExpression": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/durationValue"
+        },
+        "min": {
+          "$ref": "#/$defs/durationValue"
+        },
+        "max": {
+          "$ref": "#/$defs/durationValue"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "source_text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["value"],
+          "not": {
+            "anyOf": [
+              {"required": ["min"]},
+              {"required": ["max"]},
+              {"required": ["text"]}
+            ]
+          }
+        },
+        {
+          "required": ["min", "max"],
+          "not": {
+            "anyOf": [
+              {"required": ["value"]},
+              {"required": ["text"]}
+            ]
+          }
+        },
+        {
+          "required": ["text"],
+          "not": {
+            "anyOf": [
+              {"required": ["value"]},
+              {"required": ["min"]},
+              {"required": ["max"]},
+              {"required": ["approximate"]}
+            ]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "durationValue": {
+      "type": "string",
+      "format": "duration",
+      "pattern": "^P",
+      "maxLength": 100
+    },
+    "temperature": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/temperatureAmount"
+        },
+        "unit": {
+          "$ref": "#/$defs/unitId"
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "purpose": {
+          "$ref": "#/$defs/temperaturePurpose"
+        },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        },
+        "source_text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["amount", "unit"],
+          "not": {"required": ["text"]}
+        },
+        {
+          "required": ["text"],
+          "not": {
+            "anyOf": [
+              {"required": ["amount"]},
+              {"required": ["unit"]},
+              {"required": ["source_text"]}
+            ]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "temperaturePurpose": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "oven",
+            "internal",
+            "oil",
+            "water",
+            "surface",
+            "other"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "label"
+            ]
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "stringSet": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/shortText"
+      }
+    },
+    "recipeReference": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "recipe_id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+          "maxLength": 10000
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "title"
+          ]
+        },
+        {
+          "required": [
+            "recipe_id"
+          ]
+        },
+        {
+          "required": [
+            "url"
+          ]
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "nutritionStatement": {
+      "type": "object",
+      "required": [
+        "basis",
+        "nutrients"
+      ],
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/nutritionBasis"
+        },
+        "nutrients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/$defs/nutrient"
+          }
+        },
+        "note": {
+          "$ref": "#/$defs/longText"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "nutritionBasis": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "recipe",
+            "serving",
+            "quantity",
+            "unspecified"
+          ]
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "quantity": {
+          "$ref": "#/$defs/quantity"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "quantity"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "quantity"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "unspecified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quantity": false
+            }
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "nutrient": {
+      "type": "object",
+      "required": [
+        "nutrient"
+      ],
+      "properties": {
+        "nutrient": {
+          "enum": [
+            "energy",
+            "fat",
+            "saturated_fat",
+            "trans_fat",
+            "unsaturated_fat",
+            "cholesterol",
+            "carbohydrate",
+            "sugars",
+            "fiber",
+            "protein",
+            "sodium",
+            "salt",
+            "other"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        },
+        "amount": {
+          "$ref": "#/$defs/amount"
+        },
+        "unit": {
+          "enum": [
+            "kcal",
+            "kJ",
+            "g",
+            "mg",
+            "mcg"
+          ]
+        },
+        "source_text": {
+          "$ref": "#/$defs/shortText"
+        },
+        "text": {
+          "$ref": "#/$defs/shortText"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "amount"
+          ],
+          "not": {
+            "required": [
+              "text"
+            ]
+          }
+        },
+        {
+          "required": [
+            "text"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "amount"
+                ]
+              },
+              {
+                "required": [
+                  "unit"
+                ]
+              },
+              {
+                "required": [
+                  "source_text"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "nutrient": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "label"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "nutrient": {
+                "const": "energy"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "kcal",
+                  "kJ"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "g",
+                  "mg",
+                  "mcg"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "dietaryClaim": {
+      "type": "object",
+      "required": [
+        "text",
+        "suitability"
+      ],
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/longText"
+        },
+        "suitability": {
+          "enum": [
+            "suitable",
+            "unsuitable"
+          ]
+        },
+        "diet": {
+          "enum": [
+            "diabetic",
+            "gluten_free",
+            "halal",
+            "hindu",
+            "kosher",
+            "low_calorie",
+            "low_fat",
+            "low_lactose",
+            "low_salt",
+            "vegan",
+            "vegetarian"
+          ]
+        },
+        "condition": {
+          "$ref": "#/$defs/longText"
+        },
+        "variant_ref": {
+          "$ref": "#/$defs/portableId"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "allergenDeclaration": {
+      "type": "object",
+      "required": [
+        "text",
+        "substance",
+        "presence"
+      ],
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/longText"
+        },
+        "substance": {
+          "$ref": "#/$defs/shortText"
+        },
+        "presence": {
+          "enum": [
+            "contains",
+            "may_contain",
+            "free_from"
+          ]
+        },
+        "condition": {
+          "$ref": "#/$defs/longText"
+        },
+        "variant_ref": {
+          "$ref": "#/$defs/portableId"
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "assetLicense": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/shortText"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+          "maxLength": 10000
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "name"
+          ]
+        },
+        {
+          "required": [
+            "url"
+          ]
+        }
+      ],
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "asset": {
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "media_type",
+        "sha256",
+        "size"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^assets/[A-Za-z0-9][A-Za-z0-9._/-]{0,510}$",
+          "maxLength": 512
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+$",
+          "maxLength": 255
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "role": {
+          "enum": [
+            "image",
+            "source",
+            "other"
+          ]
+        },
+        "alt": {
+          "$ref": "#/$defs/shortText"
+        },
+        "caption": {
+          "$ref": "#/$defs/longText"
+        },
+        "creator": {
+          "$ref": "#/$defs/shortText"
+        },
+        "credit": {
+          "$ref": "#/$defs/longText"
+        },
+        "rights": {
+          "$ref": "#/$defs/longText"
+        },
+        "license": {
+          "$ref": "#/$defs/assetLicense"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+          "maxLength": 10000
+        }
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": true
+    },
+    "extensions": {
+      "type": "object",
+      "maxProperties": 1000,
+      "propertyNames": {
+        "$ref": "#/$defs/objectMemberName"
+      },
+      "patternProperties": {
+        "^x-": true
+      },
+      "additionalProperties": false
+    }
+  }
+}
