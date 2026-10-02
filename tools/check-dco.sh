@@ -5,7 +5,9 @@
 #     check-dco.sh BASE HEAD
 #
 # Without a usable BASE (a new branch, or a force push that dropped it), only HEAD
-# is checked. Merge commits carry no sign-off requirement.
+# is checked. Merge commits carry no sign-off requirement, and neither do commits
+# authored by Dependabot, whose sign-off uses a different address than its
+# commits do.
 set -euo pipefail
 
 base="${1:-}"
@@ -20,6 +22,10 @@ fi
 
 failed=0
 for commit in $commits; do
+    if [[ "$(git log -1 --format=%an "$commit")" == "dependabot[bot]" ]]; then
+        continue
+    fi
+
     author="$(git log -1 --format='%an <%ae>' "$commit")"
     if ! git log -1 --format=%B "$commit" | git interpret-trailers --parse |
         grep -Fixq "Signed-off-by: $author"; then
