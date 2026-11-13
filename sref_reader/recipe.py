@@ -130,7 +130,7 @@ def validate(
         # does not claim, which section 5 forbids.
         return document, report
 
-    registry = _registry(report)
+    registry = _registry(report, header.get("unit_registry"))
     context = _Context(
         report=report,
         registry=registry,
@@ -180,9 +180,9 @@ class _Context:
         self.recipe_id: Any = None
 
 
-def _registry(report: Report) -> Registry | None:
+def _registry(report: Report, declared: object) -> Registry | None:
     registry_report = Report()
-    registry = load_registry(snapshot.units(), registry_report)
+    registry = load_registry(snapshot.units(declared), registry_report)
     if registry is None:
         report.add("malformed-registry", "the pinned unit registry did not load")
     return registry
@@ -354,10 +354,10 @@ def _check_chronology(document: dict[str, Any], report: Report) -> None:
 
 
 def _plausible_date(text: str) -> bool:
-    import datetime
+    import datetime as dt
 
     try:
-        datetime.date.fromisoformat(text)
+        dt.date.fromisoformat(text)
     except ValueError:
         return False
     return True

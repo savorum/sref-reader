@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sref:schema:manifest:0.1.0",
+  "title": "SREF package manifest 0.1.0",
+  "type": "object",
+  "required": [
+    "sref_package",
+    "recipe",
+    "assets"
+  ],
+  "properties": {
+    "sref_package": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "const": "0.1.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "recipe": {
+      "$ref": "#/$defs/recipeEntry"
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/assetEntry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "portableId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "mediaType": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+$",
+      "maxLength": 255
+    },
+    "recipeEntry": {
+      "type": "object",
+      "required": [
+        "path",
+        "media_type",
+        "sha256",
+        "size"
+      ],
+      "properties": {
+        "path": {
+          "const": "recipe.json"
+        },
+        "media_type": {
+          "const": "application/json"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "assetEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "media_type",
+        "sha256",
+        "size"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableId"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^assets/[A-Za-z0-9][A-Za-z0-9._/-]{0,510}$",
+          "maxLength": 512
+        },
+        "media_type": {
+          "$ref": "#/$defs/mediaType"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

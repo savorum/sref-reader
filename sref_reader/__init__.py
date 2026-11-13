@@ -1,6 +1,6 @@
 """A reference SREF reader.
 
-Reads SREF 0.4.0 recipe documents, packages, and bundles, validates them
+Reads SREF 0.5.0 recipe documents, packages, and bundles, validates them
 structurally and semantically, and rejects invalid inputs. Writing is
 intentionally excluded to ensure an independent reader implementation.
 
@@ -52,7 +52,7 @@ from .registry import (
 from .versions import SUPPORTED_FORMAT, SUPPORTED_REGISTRY
 
 #: The distribution version, which is not the SREF version it implements.
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 #: The conformance capabilities this implementation claims, in the vocabulary
 #: of the specification's section 22. Round-trip conformance is deliberately

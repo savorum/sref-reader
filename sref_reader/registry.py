@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import TYPE_CHECKING, Any
 
-from . import rational
+from . import rational, versions
 from .language import well_formed_bcp47
 
 if TYPE_CHECKING:
@@ -179,7 +179,8 @@ def load(document: Any, report: Report) -> Registry | None:
 
     units: dict[str, Unit] = {}
     bases: dict[str, str] = {}
-    normalized_aliases: dict[tuple[str, str], str] = {}
+    # Registry 0.3.0 and later match a form without its final full stop.
+    abbreviated = (versions.parse(document.get("version")) or (0, 0, 0)) >= (0, 3, 0)
 
     for index, raw in enumerate(document["units"]):
         path = f"units[{index}]"
@@ -202,7 +203,7 @@ def load(document: Any, report: Report) -> Registry | None:
 
         _check_lifecycle(raw, unit, report, path)
         _check_definition(raw, unit, definition, bases, report, path)
-        _check_labels_and_aliases(raw, unit_id, normalized_aliases, report, path)
+        _check_labels_and_aliases(raw, report, path, abbreviated=abbreviated)
 
     _check_replacements(units, report)
     _check_base_references(units, report)
@@ -288,10 +289,10 @@ def _check_definition(
 
 def _check_labels_and_aliases(
     raw: dict[str, Any],
-    unit_id: str,
-    normalized_aliases: dict[tuple[str, str], str],
     report: Report,
     path: str,
+    *,
+    abbreviated: bool,
 ) -> None:
     # An alias set is identified by its language, locale and case sensitivity,
     # and one unit may declare each of those only once. Two sets for `en` with
@@ -326,21 +327,25 @@ def _check_labels_and_aliases(
             )
         alias_sets.add(scope)
 
-        # A form that normalizes onto another is a form whose unit is
-        # undecidable, whether the collision is inside one set or across units.
+        # A form that normalizes onto another in the same set is listed twice.
+        # A form shared across units names each of them as a candidate, which
+        # a parser keeps ambiguous without further evidence.
+        normalized: set[str] = set()
         for form in alias.get("forms") or []:
-            key = (
-                locale.casefold() or language.casefold(),
-                _normalize_alias(form, case_sensitive=case_sensitive),
-            )
-            owner = normalized_aliases.get(key)
-            if owner is not None:
+            if abbreviated and isinstance(form, str) and form.endswith("."):
                 report.add(
-                    "duplicate-normalized-unit-alias",
-                    f"{form!r} already identifies {owner!r} in the same scope",
+                    "unit-alias-trailing-full-stop",
+                    f"{form!r} ends in a full stop, which matching drops",
                     alias_path,
                 )
-            normalized_aliases[key] = unit_id
+            key = _normalize_alias(form, case_sensitive=case_sensitive, abbreviated=abbreviated)
+            if key in normalized:
+                report.add(
+                    "duplicate-normalized-unit-alias",
+                    f"{form!r} repeats another form of the same alias set",
+                    alias_path,
+                )
+            normalized.add(key)
 
 
 def _check_replacements(units: dict[str, Unit], report: Report) -> None:
@@ -384,6 +389,8 @@ def _check_base_references(units: dict[str, Unit], report: Report) -> None:
             current = units[following]
 
 
-def _normalize_alias(form: str, *, case_sensitive: bool) -> str:
+def _normalize_alias(form: str, *, case_sensitive: bool, abbreviated: bool) -> str:
     normalized = unicodedata.normalize("NFC", form).strip()
+    if abbreviated and len(normalized) > 1:
+        normalized = normalized.removesuffix(".")
     return normalized if case_sensitive else normalized.casefold()

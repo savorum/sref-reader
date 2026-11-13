@@ -13,7 +13,7 @@ python3 -m unittest discover -s tests -v
 
 ## Conformance
 
-The library claims these capabilities for SREF 0.4.0 with unit registry 0.2.0:
+The library claims these capabilities for SREF 0.5.0 with unit registry 0.3.0:
 
 | Capability | Status |
 | --- | --- |

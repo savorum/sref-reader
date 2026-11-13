@@ -10,7 +10,7 @@ import sref_reader
 
 def choice_recipe():
     return {
-        "sref": {"version": "0.4.0", "unit_registry": "0.2.0"},
+        "sref": {"version": "0.5.0", "unit_registry": "0.3.0"},
         "id": "choices",
         "title": "Choices",
         "ingredient_sections": [
@@ -54,5 +54,5 @@ class ChoiceTests(unittest.TestCase):
         }
         self.assertIn("member-not-defined-by-version", sref_reader.validate_recipe(body)[1].codes)
         newer = copy.deepcopy(body)
-        newer["sref"]["version"] = "0.4.1"
+        newer["sref"]["version"] = "0.5.1"
         self.assertFalse(sref_reader.validate_recipe(newer)[1].violations)

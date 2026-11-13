@@ -1,0 +1,18 @@
+{
+  "format": "sref-release-snapshot",
+  "version": 1,
+  "sref_version": "0.5.0",
+  "unit_registry_version": "0.3.0",
+  "state": "released",
+  "files": {
+    "registry/units.json": "3ab4ae9d4310a6522a667a90d62fc5942013e11fce4687729f65c1d04eab0506",
+    "schema/bundle-manifest.schema.json": "f4ee0dc257f6b2ba6eaabceee62aed9c41c9251e55007ae0efe78410b5edb0b7",
+    "schema/conformance-manifest.schema.json": "a7cdf8157f22657d0eadf7754c4649e8bae1c0527c67d4e73e1f192208a7ecaf",
+    "schema/ingredient-line-corpus.schema.json": "e8fed6da98e2d60ff8ec616f791f63603d549946d7328c049d2da16da3cd1748",
+    "schema/manifest.schema.json": "4ea15bf17194d58589d37e8642ba6c2fec0e88f9de52754ce2f36d4ff525160a",
+    "schema/recipe.schema.json": "f316253893ce09037915e4daafff936029d894c8b6c19bd868fb53c6d175d149",
+    "schema/unit-conversion-corpus.schema.json": "def449b56bca0b34bb263d892927f78d6584bf1472ab35b2ca1469eb5477c715",
+    "schema/unit-registry.schema.json": "3276c23c7d8d9482653261853f706cfa6ca0be1d74deeebcd3a3cc44374b2bed",
+    "schema/unit-resolution-corpus.schema.json": "59423ce9620b9275ba6190f6d17cf64dccf4aa79f487f64d67e77024cc4d1eeb"
+  }
+}

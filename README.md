@@ -28,7 +28,7 @@ import sref_reader
 recipe = sref_reader.read_recipe(
     json.dumps(
         {
-            "sref": {"version": "0.4.0", "unit_registry": "0.2.0"},
+            "sref": {"version": "0.5.0", "unit_registry": "0.3.0"},
             "id": "tea",
             "title": "Tea",
             "instruction_sections": [
@@ -53,13 +53,13 @@ print(recipe["title"])
 ## Compatibility
 
 `__version__` and `pyproject.toml` version this library.
-`SUPPORTED_FORMAT` (`0.4.0`) and `SUPPORTED_REGISTRY` (`0.2.0`) name the SREF
+`SUPPORTED_FORMAT` (`0.5.0`) and `SUPPORTED_REGISTRY` (`0.3.0`) name the SREF
 and unit-registry versions it implements. The three numbers are independent.
 
-The vendored SREF snapshot is loaded through `importlib.resources` and checked
-against its manifest digests; altered bytes fail to load. Documents are checked
-against the schema and then against the semantic and archive rules the schema
-cannot express. A document from a compatible newer SREF version keeps its
+The vendored SREF snapshots (0.4.0 and 0.5.0) are loaded through
+`importlib.resources` and checked against their manifest digests; altered bytes
+fail to load. Documents are checked against their declared registry, the
+schema, and the semantic and archive rules the schema cannot express. A document from a compatible newer SREF version keeps its
 unrecognized members and extensions, and no meaning is invented for them.
 
 ## Contributing

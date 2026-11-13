@@ -187,7 +187,7 @@ class Versions(unittest.TestCase):
 
     def test_a_compatible_newer_registry_keeps_its_unknown_units(self):
         data = document(
-            sref={"version": "0.4.0", "unit_registry": "0.3.0"},
+            sref={"version": "0.5.0", "unit_registry": "0.4.0"},
             ingredient_sections=[
                 {
                     "id": "i",
@@ -233,10 +233,42 @@ class Versions(unittest.TestCase):
         self.assertIn("unknown-unit", report.codes)
 
 
+class RegistrySnapshots(unittest.TestCase):
+    """A document is checked against the registry snapshot it names."""
+
+    def body(self, registry: str) -> bytes:
+        return document(
+            sref={"version": "0.5.0", "unit_registry": registry},
+            ingredient_sections=[
+                {
+                    "id": "i",
+                    "ingredients": [
+                        {
+                            "id": "butter",
+                            "name": "butter",
+                            "quantity": {
+                                "kind": "simple",
+                                "amount": {"value": "1"},
+                                "unit": "count.stick",
+                            },
+                        },
+                    ],
+                },
+            ],
+        )
+
+    def test_a_unit_added_in_a_later_registry_is_unknown_to_an_earlier_one(self):
+        self.assertIn("unknown-unit", sref_reader.validate_recipe(self.body("0.2.0"))[1].codes)
+
+    def test_the_registry_that_added_a_unit_accepts_it(self):
+        report = sref_reader.validate_recipe(self.body("0.3.0"))[1]
+        self.assertTrue(report.valid, report.codes)
+
+
 class Preservation(unittest.TestCase):
     def test_unknown_standard_members_and_extensions_survive_reading(self):
         data = document(
-            sref={"version": "0.5.0", "unit_registry": "0.2.0"},
+            sref={"version": "0.6.0", "unit_registry": "0.3.0"},
             publication={"status": "draft"},
             **{"x-org.example.note": {"kept": True}},
         )
@@ -400,6 +432,54 @@ class Units(unittest.TestCase):
         self.assertIsNotNone(registry_module.load(snapshot.units(), report))
         self.assertTrue(report.valid, report.codes)
 
+    @staticmethod
+    def two_cups(first_forms, second_forms):
+        def cup(unit_id, milliliters, forms):
+            return {
+                "id": unit_id,
+                "kind": "physical",
+                "dimension": "volume",
+                "status": "active",
+                "definition": {
+                    "kind": "linear",
+                    "base_unit": "volume.milliliter",
+                    "multiplier": milliliters,
+                    "exact": True,
+                },
+                "labels": {"en": {"name": "cup"}},
+                "references": ["https://example.com/cup"],
+                "aliases": [{"language": "el", "forms": forms, "case_sensitive": False}],
+            }
+
+        milliliter = {
+            "id": "volume.milliliter",
+            "kind": "physical",
+            "dimension": "volume",
+            "status": "active",
+            "definition": {"kind": "base"},
+            "labels": {"en": {"name": "milliliter"}},
+            "references": ["https://example.com/ml"],
+            "aliases": [{"language": "en", "forms": ["ml"], "case_sensitive": False}],
+        }
+        return {
+            "version": "0.3.0",
+            "units": [
+                milliliter,
+                cup("volume.cup.a", "200", first_forms),
+                cup("volume.cup.b", "250", second_forms),
+            ],
+        }
+
+    def test_a_form_shared_by_two_units_names_both(self):
+        report = Report()
+        registry_module.load(self.two_cups(["κούπα"], ["κούπα"]), report)
+        self.assertTrue(report.valid, report.codes)
+
+    def test_a_form_repeated_in_one_alias_set_is_refused(self):
+        report = Report()
+        registry_module.load(self.two_cups(["κούπα", "Κούπα"], ["φλιτζάνι"]), report)
+        self.assertIn("duplicate-normalized-unit-alias", report.codes)
+
 
 class MicrowaveConditions(unittest.TestCase):
     def body(self, microwave, duration=None, version="0.4.0"):
@@ -552,13 +632,17 @@ class PinnedSnapshot(unittest.TestCase):
     """
 
     def test_every_snapshot_file_loads_and_matches_its_digest(self):
-        for name in snapshot.manifest()["files"]:
-            with self.subTest(name=name):
-                self.assertIsNotNone(snapshot.load(name))
+        for release in snapshot.RELEASES:
+            for name in snapshot.manifest(release)["files"]:
+                with self.subTest(release=release, name=name):
+                    self.assertIsNotNone(snapshot.load(name, release))
 
     def test_the_snapshot_is_read_from_inside_the_package(self):
-        located = resources.files("sref_reader") / "_vendor" / "sref-0.4.0" / "manifest.json"
-        self.assertTrue(located.is_file())
+        for release in snapshot.RELEASES:
+            located = (
+                resources.files("sref_reader") / "_vendor" / f"sref-{release}" / "manifest.json"
+            )
+            self.assertTrue(located.is_file(), release)
 
     def test_a_snapshot_file_the_release_did_not_record_is_refused(self):
         with self.assertRaises(snapshot.SnapshotCorruptError):
@@ -982,7 +1066,7 @@ class VersionScopedMembers(unittest.TestCase):
 
     def test_the_same_member_under_a_newer_version_is_accepted(self):
         recipe, report = sref_reader.validate_recipe(
-            self.document(version="0.5.0", future_standard_field={"value": 4})
+            self.document(version="0.6.0", future_standard_field={"value": 4})
         )
         self.assertTrue(report.valid, report.codes)
         self.assertEqual(recipe["future_standard_field"], {"value": 4})
@@ -997,7 +1081,7 @@ class VersionScopedMembers(unittest.TestCase):
         # The two compatibility lines are independent: a newer registry widens
         # the unit vocabulary and says nothing about which members exist.
         body = json.loads(self.document(future_standard_field={"value": 4}))
-        body["sref"]["unit_registry"] = "0.3.0"
+        body["sref"]["unit_registry"] = "0.4.0"
         _recipe, report = sref_reader.validate_recipe(json.dumps(body).encode())
         self.assertIn("member-not-defined-by-version", report.codes)
 

@@ -7,7 +7,7 @@ name = "sref-reader"
 # The distribution version and the format version are separate numbers about
 # separate things, and the SREF version this implements is `SUPPORTED_FORMAT`.
 # They agree here because this release exists to implement that version.
-version = "0.4.0"
+version = "0.5.0"
 description = "A reference reader for the Structured Recipe Exchange Format"
 readme = "README.md"
 requires-python = ">=3.10"

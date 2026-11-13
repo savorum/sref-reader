@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-SUPPORTED_FORMAT = "0.4.0"
-SUPPORTED_REGISTRY = "0.2.0"
+SUPPORTED_FORMAT = "0.5.0"
+SUPPORTED_REGISTRY = "0.3.0"
 
 
 @dataclass(frozen=True)

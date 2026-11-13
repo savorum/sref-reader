@@ -1,8 +1,9 @@
-"""The pinned SREF release this reader implements.
+"""The pinned SREF releases this reader implements.
 
-The pinned 0.4.0 released snapshot (schemas and unit registry) is vendored
-under `_vendor/` inside the package and read through `importlib.resources`,
-so an installed wheel can find it.
+Each supported snapshot (schemas and unit registry) is vendored under
+`_vendor/` inside the package and read through `importlib.resources`, so an
+installed wheel can find it. Schemas come from the latest; a document is
+checked against the registry snapshot it names.
 
 The snapshot is verified against its manifest's digests on load, so a
 snapshot edited in place is a load error rather than a quiet change in what
@@ -17,9 +18,10 @@ import json
 from importlib import resources
 from typing import Any
 
-#: Where the snapshot sits inside this package. One release, named by its
-#: version, so a later one arrives beside it rather than overwriting it.
-VENDOR = "_vendor/sref-0.4.0"
+#: The vendored releases, oldest first. Each sits in `_vendor/sref-<version>`,
+#: so a later one arrives beside it rather than overwriting it.
+RELEASES = ("0.4.0", "0.5.0")
+LATEST = RELEASES[-1]
 
 
 class SnapshotCorruptError(RuntimeError):
@@ -51,7 +53,7 @@ class SnapshotMismatchError(SnapshotCorruptError):
         super().__init__(f"{name} does not match the digest the snapshot recorded")
 
 
-def _resource(name: str):
+def _resource(name: str, release: str):
     """Address one file in the snapshot.
 
     Joined a segment at a time because a resource is not a filesystem path,
@@ -59,15 +61,15 @@ def _resource(name: str):
     installed under implements.
     """
     resource = resources.files(__package__)
-    for segment in f"{VENDOR}/{name}".split("/"):
+    for segment in f"_vendor/sref-{release}/{name}".split("/"):
         resource = resource / segment
     return resource
 
 
-@functools.lru_cache(maxsize=1)
-def manifest() -> dict[str, Any]:
+@functools.cache
+def manifest(release: str = LATEST) -> dict[str, Any]:
     try:
-        text = _resource("manifest.json").read_text(encoding="utf-8")
+        text = _resource("manifest.json", release).read_text(encoding="utf-8")
     except FileNotFoundError as exc:
         # A build that shipped the modules without the data.
         raise SnapshotMissingError from exc
@@ -75,21 +77,21 @@ def manifest() -> dict[str, Any]:
 
 
 @functools.cache
-def read(name: str) -> bytes:
+def read(name: str, release: str = LATEST) -> bytes:
     """The bytes of one snapshot file, verified against the snapshot manifest."""
-    declared = manifest()["files"].get(name)
+    declared = manifest(release)["files"].get(name)
     if declared is None:
         raise SnapshotMissingFileError(name)
-    data = _resource(name).read_bytes()
+    data = _resource(name, release).read_bytes()
     if hashlib.sha256(data).hexdigest() != declared:
         raise SnapshotMismatchError(name)
     return data
 
 
 @functools.cache
-def load(name: str) -> Any:
+def load(name: str, release: str = LATEST) -> Any:
     """Load one snapshot file, verifying it against the snapshot manifest."""
-    return json.loads(read(name).decode("utf-8"))
+    return json.loads(read(name, release).decode("utf-8"))
 
 
 def recipe_schema() -> Any:
@@ -104,6 +106,10 @@ def bundle_manifest_schema() -> Any:
     return load("schema/bundle-manifest.schema.json")
 
 
-@functools.lru_cache(maxsize=1)
-def units() -> Any:
+@functools.cache
+def units(registry_version: object = None) -> Any:
+    """The registry snapshot a document names, or the latest for any other."""
+    for release in RELEASES:
+        if manifest(release)["unit_registry_version"] == registry_version:
+            return load("registry/units.json", release)
     return load("registry/units.json")
